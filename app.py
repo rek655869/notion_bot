@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 from notion_client import Client
+import schedule
 
 from bot import Bot
 import commands
@@ -12,15 +13,26 @@ config.read('config.ini')
 bot = Bot(config['DEFAULT']['TG_token'])
 bot.notion = Client(auth=config['DEFAULT']['Notion_token'])
 bot.db_id = config['DEFAULT']['DB_ID']
+chat_id = 944652106
 
+
+def send_schedule():
+    bot.send_message(chat_id, commands.get_schedule(bot))
+
+
+schedule.every().day.at("05:00").do(send_schedule)
 
 while True:
+    schedule.run_pending()
+
     event = bot.getUpdates()
     if event is not None:
         if 'message' in event:
             text = event['message']['text']
             message_id = event['message']['message_id']
-            chat_id = event['message']['chat']['id']
+
+            if event['message']['chat']['id'] != chat_id:
+                continue
 
             # расписание на день
             if '/day' in text:
@@ -40,3 +52,4 @@ while True:
             message, keyboard = commands.complete_task(bot, event['callback_query']['data'], old_message)
             bot.edit_message(old_message['chat']['id'], old_message['message_id'], message, keyboard)
             bot.congratulate(event['callback_query']['id'])
+

@@ -27,12 +27,12 @@ while True:
                 message, keyboard = commands.get_schedule(bot)
                 bot.send_message(chat_id, message, keyboard)
 
-            # # если команд нет, значит это добавление новой задачи
-            # else:
-            #     if commands.add_task(bot, text):
-            #         bot.send_message(chat_id, 'Внесено!')
-            #     else:
-            #         bot.send_message(chat_id, 'Не понимаю')
+            # если команд нет, значит это добавление новой задачи
+            else:
+                if commands.add_task(bot, text):
+                    bot.send_message(chat_id, 'Внесено!')
+                else:
+                    bot.send_message(chat_id, 'Не понимаю')
 
         elif 'callback_query' in event:
             # выполнение задачи

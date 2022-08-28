@@ -2,6 +2,7 @@ import requests
 import json
 import random
 from typing import Optional, List
+from requests import Session
 
 from gratters import gratters
 
@@ -12,7 +13,7 @@ class Bot:
         self.url = f'https://api.telegram.org/bot{token}/'
         self.last_update = 0
         self.db_id = None
-        self.notion = None
+        self.notion: Session = None
 
     # ---------- TELEGRAM ---------
 
@@ -81,20 +82,48 @@ class Bot:
 
     # ---------- NOTION ----------
 
-    def get_pages(self, **kwargs) -> List[dict]:
+    def get_pages(self, filter: dict = None, sorts: list = None,
+                  start_cursor: str = None, page_size: int = 100) -> List[dict]:
         """
         Получить страницы из базы данных в Notion
 
-        :param kwargs: filter, sorts, start_cursor, page_size
+        :param filter: условие фильтрации возвращаемых страниц
+        :param sorts: упорядочивает результаты на основе предоставленных критериев сортировки
+        :param start_cursor: при указании возвращает страницу результатов, начиная с указанного курсора
+        :param page_size: кол-во требуемых страниц
         :return: список со страницами
         """
-        return self.notion.databases.query(database_id=self.db_id, **kwargs)['results']
+        url = f"https://api.notion.com/v1/databases/{self.db_id}/query"
+        payload = {}
+        if filter:
+            payload.update({'filter': filter})
+        if sorts:
+            payload.update({'sorts': sorts})
+        if start_cursor:
+            payload.update({'start_cursor': start_cursor})
+        payload.update({'page_size': page_size})
+        return self.notion.post(url, json=payload).json()['results']
 
-    def update_page(self, page_id: str, **kwargs):
+    def update_page(self, page_id: str, properties: dict):
         """
         Обновление страницы в Notion
 
         :param page_id: ID страницы
-        :param kwargs: archived, properties, icon, cover
+        :param properties: значения свойств этой страницы
         """
-        self.notion.pages.update(page_id=page_id, **kwargs)
+        url = "https://api.notion.com/v1/pages/" + page_id
+        payload = {"properties": properties}
+        self.notion.patch(url, json=payload)
+
+    def create_page(self, properties: dict):
+        """
+        Создание страницы в Notion
+
+        :param properties: значения свойств этой страницы
+        """
+        url = "https://api.notion.com/v1/pages"
+        payload = {
+            'parent': {"type": "database_id", "database_id": self.db_id},
+            'properties': properties
+        }
+        self.notion.post(url, json=payload)

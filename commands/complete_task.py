@@ -41,7 +41,7 @@ def complete_task(bot: Bot, page_id: str, old_message: dict) -> Tuple[str, str]:
         buttons[i].update({'text': count})
 
     prop = {'Checked': {'checkbox': True}}
-    bot.update_page(page_id, properties=prop)
+    bot.update_page(page_id, prop)
 
     split_keyboard = [buttons[i:i + 5] for i in range(0, len(buttons), 5)]
     text = '\n'.join(elements).replace('(', '(_').replace(')', '_)').replace('[', '\[')

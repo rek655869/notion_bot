@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-from notion_client import Client
+import requests
 import schedule
 
 from bot import Bot
@@ -9,10 +9,12 @@ import commands
 config = ConfigParser()
 config.read('config.ini')
 
-
+notion_session = requests.session()
+notion_session.headers.update({'Authorization': f"Bearer {config['DEFAULT']['Notion_token']}",
+                               'Notion-Version': "2022-02-22"})
 bot = Bot(config['DEFAULT']['TG_token'])
-bot.notion = Client(auth=config['DEFAULT']['Notion_token'])
 bot.db_id = config['DEFAULT']['DB_ID']
+bot.notion = notion_session
 chat_id = 944652106
 
 

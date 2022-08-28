@@ -66,8 +66,6 @@ def add_task(bot: Bot, message: str) -> bool:
     elif date:
         date = {"start": start}
 
-
-    parent = {"type": "database_id", "database_id": bot.db_id}
     properties = {}
     properties.update({'Name': {"title": [{"text": {"content": title}}]}})
     properties.update({'Checked': {"checkbox": False}})
@@ -81,5 +79,5 @@ def add_task(bot: Bot, message: str) -> bool:
             tags.append({"name": tag})
         properties.update({'Tags': {"multi_select": tags}})
 
-    bot.notion.pages.create(parent=parent, properties=properties)
+    bot.create_page(properties)
     return True

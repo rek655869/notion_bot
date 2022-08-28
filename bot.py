@@ -97,7 +97,4 @@ class Bot:
         :param page_id: ID страницы
         :param kwargs: archived, properties, icon, cover
         """
-        a = self.notion.pages.update(page_id=page_id, **kwargs)
-        print(
-            a
-        )
+        self.notion.pages.update(page_id=page_id, **kwargs)

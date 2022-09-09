@@ -45,4 +45,6 @@ def complete_task(bot: Bot, page_id: str, old_message: dict) -> Tuple[str, str]:
 
     split_keyboard = [buttons[i:i + 5] for i in range(0, len(buttons), 5)]
     text = '\n'.join(elements).replace('(', '(_').replace(')', '_)').replace('[', '\[')
+    if not text:
+        return 'Все задачи выполнены', None
     return text, json.dumps({'inline_keyboard': split_keyboard})

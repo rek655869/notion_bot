@@ -22,7 +22,7 @@ def send_schedule():
     bot.send_message(chat_id, *commands.get_schedule(bot))
 
 
-schedule.every().day.at("21:10").do(send_schedule)
+schedule.every().day.at("05:00").do(send_schedule)
 
 while True:
     schedule.run_pending()

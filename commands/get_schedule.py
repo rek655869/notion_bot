@@ -67,6 +67,8 @@ def get_schedule(bot: Bot) -> Tuple[str, str]:
         keyboard.append({"text": f"{count}", "callback_data": f'{page.id}'})
 
     split_keyboard = [keyboard[i:i + 5] for i in range(0, len(keyboard), 5)]
+    if not message:
+        return 'Все задачи выполнены', None
     return message, json.dumps({"inline_keyboard": split_keyboard})
 
 
